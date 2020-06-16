@@ -1,2 +1,2 @@
-# stash
-Working on a new project.
+# MiniProjects
+Daily Projects in Javascript
