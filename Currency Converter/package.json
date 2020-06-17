@@ -1,0 +1,17 @@
+{
+  "name": "currency-converter",
+  "version": "1.0.0",
+  "description": "Convert INR to Dollar and vice versa",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main"
+  },
+  "author": "Bobby Robin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

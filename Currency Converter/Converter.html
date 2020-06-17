@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <style>
+      body {
+        font-family: "Roboto", sans-serif;
+      }
+    </style>
+    <title>Currency Converter</title>
+  </head>
+  <body>
+    <div class="container">
+      <h3>Currency Converter</h3>
+      <h4 id="current"></h4>
+      <h4 id="display"></h4>
+      <form>
+        <input
+          type="text"
+          id="input"
+          placeholder="Value in INR"
+          autocomplete="off"
+        />
+        <button id="button" class="material-icons btn waves-effect">
+          compare_arrows
+        </button>
+        <button id="btn" type="submit" class="btn">Convert</button>
+      </form>
+    </div>
+  </body>
+  <script>
+    //Initializing values
+    let toDollar = true;
+    let valueOfDollar;
+    const display = document.getElementById("display");
+    const button = document.getElementById("btn");
+    const input = document.getElementById("input");
+    const current = document.getElementById("current");
+    const flip = document.getElementById("button");
+    var url =
+      "https://free.currconv.com/api/v7/convert?q=USD_INR&apiKey=_YOUR_API_KEY_&compact=ultra";
+
+    //Adding event listeners to buttons
+    button.addEventListener("click", handleClick);
+    flip.addEventListener("click", handleSwitch);
+
+    //Fetch current value of dollar from server
+    httpGetAsync(url);
+
+    //Retrieve saved data from local storage
+    let savedData = localStorage.getItem("item");
+    display.innerHTML = JSON.parse(savedData);
+
+    //Event Listener for Convert Button
+    function handleClick(event) {
+      event.preventDefault();
+      const inputValue = input.value;
+      if (isNaN(inputValue)) {
+        alert("Please enter amount in digits.");
+        input.value = "";
+      } else if (!inputValue.length) {
+        alert("Please enter amount");
+        input.value = "";
+      } else {
+        if (toDollar) {
+          convertToDollar(inputValue);
+        } else {
+          convertToInr(inputValue);
+        }
+      }
+    }
+    //Event Listener for Flip button
+    function handleSwitch(event) {
+      event.preventDefault();
+      display.style.display = "none";
+      check();
+    }
+    //Check if converting to Dollar or INR
+    function check() {
+      if (toDollar) {
+        toDollar = !toDollar;
+        input.placeholder = "Value in Dollars";
+      } else {
+        toDollar = !toDollar;
+        input.placeholder = "Value in INR";
+      }
+    }
+    //Runs this if converting to Dollar
+    function convertToDollar(inputValue) {
+      let amt = inputValue / valueOfDollar;
+      let ans = amt.toFixed(2) + " dollars";
+      display.innerHTML = ans;
+      display.style.display = "block";
+      localStorage.setItem("item", JSON.stringify(ans));
+      input.value = "";
+    }
+    //Runs this if converting to INR
+    function convertToInr(inputValue) {
+      let amt = inputValue * valueOfDollar;
+      let ans = amt.toFixed(2) + " Rupees";
+      display.innerHTML = ans;
+      display.style.display = "block";
+      localStorage.setItem("item", JSON.stringify(ans));
+      input.value = "";
+    }
+
+    function httpGetAsync(url) {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function () {
+        let res;
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+          res = JSON.parse(xmlHttp.responseText);
+        if (res !== undefined) {
+          valueOfDollar = res.USD_INR;
+        }
+      };
+      xmlHttp.open("GET", url, true);
+      xmlHttp.send(null);
+    }
+  </script>
+</html>
