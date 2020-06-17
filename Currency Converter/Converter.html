@@ -50,9 +50,10 @@
     const input = document.getElementById("input");
     const current = document.getElementById("current");
     const flip = document.getElementById("button");
-    var url =
-      "https://free.currconv.com/api/v7/convert?q=USD_INR&apiKey=_YOUR_API_KEY_&compact=ultra";
-    //Add your api key in the above url
+    var _YOUR_API_KEY_;
+    // Assign your API key
+
+    var url = `https://free.currconv.com/api/v7/convert?q=USD_INR&apiKey=${_YOUR_API_KEY_}&compact=ultra`;
 
     //Adding event listeners to buttons
     button.addEventListener("click", handleClick);
