@@ -1,7 +1,7 @@
 {
   "name": "currency-converter",
   "version": "1.0.0",
-  "description": "Convert INR to Dollar and vice versa",
+  "description": "Convert INR to USD and vice versa",
   "main": "main.js",
   "scripts": {
     "start": "node main"
