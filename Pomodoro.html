@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap"
+      rel="stylesheet"
+    />
+    <title>Pomodoro</title>
+  </head>
+  <style>
+    body {
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      font-family: "Orbitron", sans-serif;
+    }
+    button {
+      margin: 1em;
+    }
+    .container {
+      position: absolute;
+      top: 22em;
+      left: 10em;
+      display: flex;
+    }
+    .display {
+      flex: 1;
+      flex-direction: column;
+    }
+    h2 {
+      margin-left: 35px;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <div class="display">
+        <h2><span id="minutes">25</span>:<span id="seconds">00</span></h2>
+        <button id="start" class="btn-floating btn-large transparent pink-text">
+          Start
+        </button>
+        <button id="stop" class="btn-floating btn-large transparent pink-text">
+          Pause
+        </button>
+        <button id="reset" class="btn-floating btn-large transparent pink-text">
+          Reset
+        </button>
+      </div>
+      <h1 id="timesup" style="color: #4f8a8b;"></h1>
+    </div>
+  </body>
+  <script>
+    //Set backGround Image on startup if online
+    if (window.navigator.onLine) {
+      document.body.style.backgroundImage =
+        "url(https://images.pexels.com/photos/373076/pexels-photo-373076.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260)";
+    }
+    const start = document.getElementById("start");
+    const stop = document.getElementById("stop");
+    const display = document.getElementById("display");
+    const showMin = document.getElementById("minutes");
+    const showSec = document.getElementById("seconds");
+    const reset = document.getElementById("reset");
+    let workTime = true;
+    let pomodoro = 0;
+
+    let interval;
+    let numberOfCycles;
+
+    if (workTime) {
+      seconds = 59;
+      minutes = 24;
+
+      //Start pomodoro for 25 minutes
+      start.addEventListener("click", startPomodoro);
+    }
+
+    reset.addEventListener("click", () => {
+      window.location.reload();
+    });
+
+    if (!workTime) {
+      start.addEventListener("click", startRest);
+    }
+
+    stop.addEventListener("click", pauseTimer);
+
+    function startPomodoro() {
+      clearInterval(interval);
+      interval = setInterval(startTimer, 1000);
+      start.disabled = true;
+      stop.disabled = false;
+    }
+
+    function pauseTimer() {
+      clearInterval(interval);
+      start.disabled = false;
+      stop.disabled = true;
+    }
+
+    function startTimer() {
+      seconds--;
+      if (seconds == 0) {
+        showSec.innerHTML = seconds;
+        minutes--;
+        seconds = 59;
+      }
+      if (seconds > 1) {
+        if (seconds < 10) {
+          showSec.innerHTML = "0" + seconds;
+        } else {
+          showSec.innerHTML = seconds;
+        }
+
+        if (minutes > 1) {
+          showMin.innerHTML = minutes;
+        }
+        if (minutes === 0) {
+          document.getElementById("timesup").innerHTML = "Time's Up";
+          workTime = !workTime;
+          pauseTimer(); //Reset Timer
+          showMin.innerHTML = "00";
+          showSec.innerHTML = "00";
+          if (workTime) {
+            setTimeForWork();
+          } else {
+            setTimeForRest();
+          }
+        }
+      }
+
+      if (numberOfCycles === 4) {
+        alert("You have completed one full pomodoro cycle");
+      }
+    }
+
+    function startRest() {
+      //Start rest for 5 minutes
+      clearInterval(interval);
+      interval = setInterval(startTimer, 1000);
+      start.disabled = true;
+      stop.disabled = false;
+    }
+
+    function setTimeForRest() {
+      seconds = 59;
+      minutes = 4;
+      numberOfCycles++;
+    }
+
+    function setTimeForWork() {
+      seconds = 59;
+      minutes = 24;
+    }
+  </script>
+</html>
