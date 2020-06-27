@@ -74,7 +74,7 @@
 
     if (workTime) {
       seconds = 59;
-      minutes = 24;
+      minutes = 25;
 
       //Start pomodoro for 25 minutes
       start.addEventListener("click", startPomodoro);
@@ -91,6 +91,7 @@
     stop.addEventListener("click", pauseTimer);
 
     function startPomodoro() {
+      document.getElementById("timesup").innerHTML = "";
       clearInterval(interval);
       interval = setInterval(startTimer, 1000);
       start.disabled = true;
@@ -116,21 +117,20 @@
         } else {
           showSec.innerHTML = seconds;
         }
+      }
 
-        if (minutes > 1) {
-          showMin.innerHTML = minutes;
-        }
-        if (minutes === 0) {
-          document.getElementById("timesup").innerHTML = "Time's Up";
-          workTime = !workTime;
-          pauseTimer(); //Reset Timer
-          showMin.innerHTML = "00";
-          showSec.innerHTML = "00";
-          if (workTime) {
-            setTimeForWork();
-          } else {
-            setTimeForRest();
-          }
+      showMin.innerHTML = minutes;
+
+      if (minutes === 0) {
+        document.getElementById("timesup").innerHTML = "Time's Up";
+        workTime = !workTime;
+        pauseTimer(); //Reset Timer
+        showMin.innerHTML = "00";
+        showSec.innerHTML = "00";
+        if (workTime) {
+          setTimeForWork();
+        } else {
+          setTimeForRest();
         }
       }
 
@@ -145,17 +145,18 @@
       interval = setInterval(startTimer, 1000);
       start.disabled = true;
       stop.disabled = false;
+      document.getElementById("timesup").innerHTML = "";
     }
 
     function setTimeForRest() {
       seconds = 59;
-      minutes = 4;
+      minutes = 5;
       numberOfCycles++;
     }
 
     function setTimeForWork() {
       seconds = 59;
-      minutes = 24;
+      minutes = 25;
     }
   </script>
 </html>
