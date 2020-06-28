@@ -68,9 +68,10 @@
     const reset = document.getElementById("reset");
     let workTime = true;
     let pomodoro = 0;
+    let showMessage = true;
 
     let interval;
-    let numberOfCycles;
+    let numberOfCycles = 0;
 
     if (workTime) {
       seconds = 59;
@@ -131,11 +132,15 @@
           setTimeForWork();
         } else {
           setTimeForRest();
+          if (showMessage) {
+            if (4 % numberOfCycles === 0) {
+              alert(
+                `You have completed ${numberOfCycles / 4} full pomodoro cycle`
+              );
+            }
+            showMessage = false;
+          }
         }
-      }
-
-      if (numberOfCycles === 4) {
-        alert("You have completed one full pomodoro cycle");
       }
     }
 
@@ -152,6 +157,7 @@
       seconds = 59;
       minutes = 5;
       numberOfCycles++;
+      showMessage = true;
     }
 
     function setTimeForWork() {
