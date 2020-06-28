@@ -75,7 +75,7 @@
 
     if (workTime) {
       seconds = 59;
-      minutes = 25;
+      minutes = 24;
 
       //Start pomodoro for 25 minutes
       start.addEventListener("click", startPomodoro);
@@ -122,7 +122,7 @@
 
       showMin.innerHTML = minutes;
 
-      if (minutes === 0) {
+      if (minutes === -1) {
         document.getElementById("timesup").innerHTML = "Time's Up";
         workTime = !workTime;
         pauseTimer(); //Reset Timer
@@ -133,7 +133,7 @@
         } else {
           setTimeForRest();
           if (showMessage) {
-            if (4 % numberOfCycles === 0) {
+            if (numberOfCycles % 4 === 0) {
               alert(
                 `You have completed ${numberOfCycles / 4} full pomodoro cycle`
               );
@@ -155,14 +155,14 @@
 
     function setTimeForRest() {
       seconds = 59;
-      minutes = 5;
+      minutes = 4;
       numberOfCycles++;
       showMessage = true;
     }
 
     function setTimeForWork() {
       seconds = 59;
-      minutes = 25;
+      minutes = 24;
     }
   </script>
 </html>
