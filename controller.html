@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controller</title>
+</head>
+<style>
+    body{
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .joystickOuterCircle {
+        position: absolute;
+        bottom: 35px;
+        left: 50%;
+        width: 100px;
+        height: 100px;
+        background: rgba(126, 126, 126, 0.336);
+        border: 1px rgb(20, 4, 107)  solid;
+        border-radius: 50%;
+        transform: translateX(-50%);
+    }
+
+    .joystickInnerCircle {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(white, rgb(119, 119, 252), white);
+        border-radius: 50%;
+        left: 25px;
+        top: 25px;
+    }
+    
+</style>
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+<script>
+    class Joystick{
+        constructor(onMove){
+            const outerCircle = document.createElement('div');
+            const innerCircle = document.createElement('div');
+            outerCircle.classList.add("joystickOuterCircle");
+            innerCircle.classList.add("joystickInnerCircle");
+            outerCircle.appendChild(innerCircle);
+            document.body.appendChild(outerCircle);
+            this.stat = {
+                x: 0,
+                y: 0,
+            };
+            this.stick = innerCircle;
+            this.maxRadius = 40;
+            this.maxRadiusSquared = Math.pow(this.maxRadius, 2);
+            this.origin = {
+                left: this.stick.offsetLeft, top: this.stick.offsetTop
+            };
+            this.onMove = onMove;
+
+            if(this.stick !== undefined){
+                const joystick = this;
+                if('ontouchstart' in window){
+                    this.stick.addEventListener('touchstart', function(event){
+                        joystick._handleTouchStart(event);
+                    });
+
+                    this.stick.addEventListener('touchmove', function(event){
+                        joystick._handleTouchMove(event);
+                    });
+                    this.stick.addEventListener('touchend', function(event){
+                        joystick._handleTouchEnd(event);
+                    });
+                }
+            }
+        }
+        _handleTouchStart(event){
+               this.offset = this._getTouchPosition(event);
+        }
+
+        _handleTouchMove(event){
+          const touchPosition = this._getTouchPosition(event);
+    
+          let horizontalMoved = touchPosition.x - this.offset.x;
+          let verticalMoved = touchPosition.y - this.offset.y;
+
+          const distanceSquared = verticalMoved * verticalMoved + horizontalMoved * horizontalMoved;
+          if(distanceSquared > Math.pow(this.maxRadius, 2)){
+              const distance = Math.sqrt(distanceSquared);
+              horizontalMoved = horizontalMoved / distance;
+              verticalMoved = verticalMoved / distance;
+              horizontalMoved = horizontalMoved * this.maxRadius;
+              verticalMoved = verticalMoved * this.maxRadius;
+          }
+         
+          this.stick.style.top = `${verticalMoved + this.stick.clientHeight / 2}px`;
+          this.stick.style.left = `${horizontalMoved + this.stick.clientWidth / 2}px`;
+
+          this.stat.x = -(horizontalMoved - this.origin.left + this.stick.clientWidth / 2) / this.maxRadius;
+          this.stat.y = (verticalMoved - this.origin.top + this.stick.clientHeight / 2) / this.maxRadius;
+
+          if(this.onMove !== undefined){
+             this.onMove(this.stat.x, this.stat.y); 
+          };
+
+        }
+
+        _handleTouchEnd(event){
+           this.stick.style.top = `${this.origin.top}px`;
+           this.stick.style.left = `${this.origin.left}px`;
+
+           this.stat.x = 0;
+           this.stat.y = 0;
+
+           if(this.onMove !== undefined){
+             this.onMove(this.stat.x, this.stat.y); 
+          };
+        }
+        
+        _getTouchPosition(event){
+            const x = event.targetTouches[0].pageX;
+            const y = event.targetTouches[0].pageY;
+            return {x: x, y: y};
+        }
+    }
+
+    const canvas = document.getElementById("canvas");
+    canvas.width = screen.width;
+    canvas.height = screen.height;
+    let radius = 30;
+    let position = {
+        x: screen.width / 2,
+        y: screen.height / 2,
+    };
+
+    const context = canvas.getContext("2d");
+    context.beginPath();
+    context.arc(position.x, position.y, radius, 0, 2 * Math.PI, false);
+    context.fillStyle = "green";
+    context.fill();
+    context.stroke();
+    const joystick = new Joystick(onMove);
+    let dx = 0;
+    let dy = 0;
+    let speed = 200;
+    let lastframe = new Date().getTime();
+
+    function onMove(x, y){
+       if(x || y){
+        dy = y;
+        dx = x;
+       } else {
+           dx = 0;
+           dy = 0;
+       }
+    }   
+
+    function animate(){
+        let currentframe = new Date().getTime();
+        let deltaTime = (currentframe - lastframe) / 1000;
+
+        if(position.x + radius >= screen.width){
+            if(dx < 0){
+                dx = 0;
+            }
+        }
+
+        if(position.y + radius >= screen.height){
+            if(dy > 0){
+                dy = 0;
+            }
+        }
+        if(position.x - radius <= 0){
+            if(dx > 0){
+                dx = 0;
+            }
+        }
+
+        if(position.y - radius <= 0){
+            if(dy < 0){
+                dy = 0;
+            }
+        }
+
+        position.x -= dx * deltaTime * speed;
+        position.y += dy * deltaTime * speed;
+      
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.beginPath();
+        context.arc(position.x, position.y, radius, 0, 2 * Math.PI, false);
+        context.fillStyle = "green";
+        context.fill();
+        context.stroke();
+
+        requestAnimationFrame(animate);
+        lastframe = currentframe;
+    }
+
+    window.onload = animate;
+</script>
+</html>
